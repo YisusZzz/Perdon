@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perdón, amor de mi vida</title>
+  <style>
+    :root {
+      --rose-50: #fff6f8;
+      --rose-100: #ffe7ee;
+      --rose-200: #f9c9d9;
+      --rose-300: #eda8c3;
+      --ink: #352a33;
+      --muted: #715f6d;
+      --lavender: #d9ccff;
+      --mint: #bfe8d5;
+      --cream: #fffaf0;
+      --berry: #b94d72;
+      --wine: #7d2e54;
+      --line: rgba(125, 46, 84, 0.16);
+      --shadow: 0 24px 70px rgba(125, 46, 84, 0.14);
+      --radius: 8px;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--rose-50);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        linear-gradient(135deg, rgba(255, 246, 248, 0.95), rgba(255, 231, 238, 0.88)),
+        linear-gradient(45deg, rgba(217, 204, 255, 0.26), rgba(191, 232, 213, 0.22));
+      letter-spacing: 0;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .app {
+      position: relative;
+      min-height: 100vh;
+      isolation: isolate;
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--rose-300);
+      opacity: 0.38;
+      animation: drift linear infinite;
+    }
+
+    .particle:nth-child(3n) {
+      background: var(--lavender);
+    }
+
+    .particle:nth-child(5n) {
+      background: var(--mint);
+    }
+
+    @keyframes drift {
+      from {
+        transform: translate3d(0, 110vh, 0) scale(0.8);
+      }
+
+      to {
+        transform: translate3d(22px, -12vh, 0) scale(1.15);
+      }
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 32px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--muted);
+      background: linear-gradient(180deg, rgba(255, 246, 248, 0.95), rgba(255, 246, 248, 0));
+    }
+
+    .step-label {
+      min-width: 126px;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      position: relative;
+      border-radius: 50%;
+      border: 1px solid rgba(125, 46, 84, 0.34);
+      background: linear-gradient(#f07497 0 48%, #2f2730 48% 54%, #fffaf0 54% 100%);
+      opacity: 0.42;
+      transition: transform 220ms ease, opacity 220ms ease, box-shadow 220ms ease;
+    }
+
+    .dot::after {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 1px solid rgba(47, 39, 48, 0.35);
+      background: var(--cream);
+    }
+
+    .dot.is-active {
+      opacity: 1;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(185, 77, 114, 0.18);
+    }
+
+    .music-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 156px;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid rgba(185, 77, 114, 0.22);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: var(--wine);
+      background: rgba(255, 250, 240, 0.72);
+      box-shadow: 0 8px 26px rgba(125, 46, 84, 0.08);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .music-pill span {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: linear-gradient(#f07497 0 48%, #2f2730 48% 54%, #fffaf0 54% 100%);
+      border: 1px solid rgba(47, 39, 48, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .stage {
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .chapter {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 92px 26px 108px;
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(18px);
+      transition: opacity 360ms ease, transform 360ms ease, visibility 360ms ease;
+    }
+
+    .chapter.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .chapter-inner {
+      width: min(980px, 100%);
+    }
+
+    .chapter-kicker {
+      margin: 0 0 14px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--berry);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      color: var(--wine);
+      line-height: 1.08;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: 3.8rem;
+    }
+
+    h2 {
+      max-width: 760px;
+      font-size: 2.7rem;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 24px 0 0;
+      font-size: 1.34rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .copy {
+      max-width: 790px;
+      margin: 22px 0 0;
+      font-size: 1.12rem;
+      line-height: 1.78;
+      color: var(--muted);
+    }
+
+    .letter {
+      max-width: 820px;
+      padding-left: 24px;
+      border-left: 4px solid rgba(185, 77, 114, 0.35);
+    }
+
+    .memory-grid,
+    .thanks-grid,
+    .promise-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .memory,
+    .thanks,
+    .promise {
+      min-height: 164px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 250, 240, 0.72);
+      box-shadow: 0 14px 40px rgba(125, 46, 84, 0.08);
+    }
+
+    .memory strong,
+    .thanks strong,
+    .promise strong {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--wine);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .memory p,
+    .thanks p,
+    .promise p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.62;
+    }
+
+    .promise {
+      width: 100%;
+      text-align: left;
+      transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+    }
+
+    .promise:hover,
+    .promise:focus-visible,
+    .promise.is-open {
+      transform: translateY(-3px);
+      border-color: rgba(185, 77, 114, 0.46);
+      background: rgba(255, 255, 255, 0.78);
+      outline: 0;
+    }
+
+    .promise small {
+      display: block;
+      max-height: 0;
+      overflow: hidden;
+      margin-top: 0;
+      color: var(--ink);
+      font-size: 0.95rem;
+      line-height: 1.58;
+      transition: max-height 240ms ease, margin-top 240ms ease;
+    }
+
+    .promise.is-open small {
+      max-height: 160px;
+      margin-top: 12px;
+    }
+
+    .song-zone {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 92px;
+      align-items: stretch;
+      gap: 16px;
+    }
+
+    .carousel-control {
+      min-height: 220px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--wine);
+      background: rgba(255, 250, 240, 0.62);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      transition: transform 220ms ease, background 220ms ease;
+    }
+
+    .carousel-control:hover,
+    .carousel-control:focus-visible {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.78);
+      outline: 0;
+    }
+
+    .song-card {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr);
+      align-items: center;
+      gap: 28px;
+      min-height: 220px;
+      padding: 30px;
+      border: 1px solid rgba(185, 77, 114, 0.2);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.76);
+      box-shadow: var(--shadow);
+    }
+
+    .album-photo {
+      display: grid;
+      place-items: center;
+      width: 170px;
+      aspect-ratio: 1;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px dashed rgba(125, 46, 84, 0.28);
+      background:
+        linear-gradient(135deg, rgba(255, 231, 238, 0.72), rgba(217, 204, 255, 0.38)),
+        rgba(255, 250, 240, 0.78);
+      position: relative;
+      box-shadow: 0 18px 34px rgba(125, 46, 84, 0.12);
+    }
+
+    .album-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .album-photo img.is-hidden {
+      display: none;
+    }
+
+    .album-placeholder {
+      padding: 18px;
+      color: var(--berry);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 0.82rem;
+      font-weight: 800;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .song-title {
+      margin: 0;
+      color: var(--wine);
+      font-size: 2rem;
+      line-height: 1.18;
+    }
+
+    .song-artist {
+      margin: 8px 0 0;
+      color: var(--berry);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 0.94rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .song-note {
+      margin: 20px 0 0;
+      max-width: 470px;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.62;
+    }
+
+    .song-open {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      margin-top: 24px;
+      padding: 11px 16px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: #fff;
+      background: var(--wine);
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-weight: 800;
+      box-shadow: 0 12px 30px rgba(125, 46, 84, 0.18);
+    }
+
+    .song-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .song-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(125, 46, 84, 0.2);
+    }
+
+    .song-dot.is-active {
+      background: var(--berry);
+    }
+
+    .closing {
+      max-width: 820px;
+      padding: 34px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .closing .lead {
+      font-size: 1.42rem;
+    }
+
+    .signature {
+      margin-top: 30px;
+      color: var(--wine);
+      font-size: 1.38rem;
+      line-height: 1.5;
+    }
+
+    .nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 22px 22px 28px;
+      background: linear-gradient(0deg, rgba(255, 246, 248, 0.95), rgba(255, 246, 248, 0));
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .nav-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 142px;
+      min-height: 46px;
+      padding: 12px 18px;
+      border: 1px solid rgba(125, 46, 84, 0.22);
+      border-radius: var(--radius);
+      color: var(--wine);
+      background: rgba(255, 255, 255, 0.7);
+      font-weight: 800;
+      box-shadow: 0 12px 32px rgba(125, 46, 84, 0.1);
+    }
+
+    .nav-button.primary {
+      color: #fff;
+      background: var(--wine);
+    }
+
+    .nav-button:disabled {
+      cursor: default;
+      opacity: 0.38;
+      box-shadow: none;
+    }
+
+    .nav-button:not(:disabled):hover,
+    .nav-button:not(:disabled):focus-visible {
+      transform: translateY(-2px);
+      outline: 0;
+    }
+
+    .soft-line {
+      width: min(360px, 80%);
+      height: 1px;
+      margin: 28px 0 0;
+      background: linear-gradient(90deg, rgba(185, 77, 114, 0), rgba(185, 77, 114, 0.46), rgba(185, 77, 114, 0));
+    }
+
+    .tiny-choice {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      margin: 0 4px -7px;
+      border-radius: 50%;
+      border: 1px solid rgba(125, 46, 84, 0.25);
+      background: linear-gradient(#f07497 0 48%, #2f2730 48% 54%, #fffaf0 54% 100%);
+      position: relative;
+    }
+
+    .tiny-choice::after {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1px solid rgba(47, 39, 48, 0.28);
+      background: var(--cream);
+    }
+
+    @media (max-width: 880px) {
+      body {
+        overflow: auto;
+      }
+
+      .topbar {
+        position: sticky;
+        padding: 14px 16px;
+        flex-wrap: wrap;
+      }
+
+      .step-label,
+      .music-pill {
+        min-width: auto;
+      }
+
+      .dots {
+        order: 3;
+        flex-basis: 100%;
+      }
+
+      .stage {
+        min-height: auto;
+      }
+
+      .chapter {
+        position: relative;
+        min-height: calc(100vh - 76px);
+        display: none;
+        padding: 52px 20px 104px;
+      }
+
+      .chapter.is-active {
+        display: grid;
+      }
+
+      h1 {
+        font-size: 2.65rem;
+      }
+
+      h2 {
+        font-size: 2.15rem;
+      }
+
+      .lead {
+        font-size: 1.16rem;
+      }
+
+      .copy {
+        font-size: 1.03rem;
+      }
+
+      .letter {
+        padding-left: 18px;
+      }
+
+      .memory-grid,
+      .thanks-grid,
+      .promise-list {
+        grid-template-columns: 1fr;
+      }
+
+      .song-zone {
+        grid-template-columns: 1fr;
+      }
+
+      .carousel-control {
+        min-height: 48px;
+      }
+
+      .song-card {
+        grid-template-columns: 1fr;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .song-note {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .nav {
+        padding: 18px 14px;
+      }
+
+      .nav-button {
+        min-width: 0;
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        gap: 10px;
+      }
+
+      .step-label,
+      .music-pill {
+        font-size: 0.8rem;
+      }
+
+      .dot {
+        width: 13px;
+        height: 13px;
+      }
+
+      .dot::after {
+        inset: 4px;
+      }
+
+      h1 {
+        font-size: 2.15rem;
+      }
+
+      h2 {
+        font-size: 1.85rem;
+      }
+
+      .chapter {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .album-photo {
+        width: 136px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="particles" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="step-label" id="stepLabel">Capítulo 1 de 8</div>
+      <div class="dots" id="chapterDots" aria-label="Capítulos"></div>
+      <a class="music-pill" href="https://www.youtube.com/watch?v=Ar48yzjn1PE" target="_blank"
+        rel="noopener noreferrer">
+
+        Sparks
+      </a>
+    </header>
+
+    <main class="stage" id="stage">
+      <section class="chapter is-active" aria-labelledby="chapter-1-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker"></p>
+          <h1 id="chapter-1-title">Perdón mi amorcito.</h1>
+          <div class="soft-line" aria-hidden="true"></div>
+          <p class="lead">
+            Hice algo que pudo lastimarte y no lo quería hacer por que te amo muchisimo y quiero que sepas que
+            quiero pedirte perdón, con cariño, con responsabilidad y con todo el
+            amor que te tengo.
+          </p>
+          <p class="copy">
+            .
+          </p>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-2-title">
+        <div class="chapter-inner letter">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-2-title"></h2>
+          <p class="lead">
+            Sé que lo que hice estuvo mal .
+            Entiendo que eso pudo hacerte sentir incómoda, insegura o triste.
+          </p>
+          <p class="copy">
+            No quiero minimizarlo ni decir que no era para tanto si algo te hizo sentir mal, importa.
+            Si algo hace que te sientas inquieta debo tomarlo en serio perdón por no pensar antes en
+            cómo podía hacerte sentir y por no proteger la confianza que me has dado.
+          </p>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-3-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-3-title">Te amo por lo que eres y por lo que me haces sentir.</h2>
+          <div class="thanks-grid">
+            <div class="thanks">
+              <strong>Tu forma de estar</strong>
+              <p>Me das calma incluso cuando en los dias son malos, tu presencia se siente como un lugar al que quiero
+                volver.</p>
+            </div>
+            <div class="thanks">
+              <strong>Tu voz</strong>
+              <p>Me encanta escucharte, que todos los dias pueda escuchar tu voz diciendome cosas lindas mientras tengo
+                mi celular en mi oido .</p>
+            </div>
+            <div class="thanks">
+              <strong>Nosotros</strong>
+              <p>Me gusta la confianza que hemos construido y justo por eso me duele haberla descuidado.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-4-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-4-title">Hay cosas que me recuerdan por qué quiero hacerlo mejor.</h2>
+          <p class="copy">
+            No traigo estos momentos para pedirte que ignores lo que pasó, los traigo porque
+            me recuerdan lo valioso que es lo nuestro.
+          </p>
+          <div class="memory-grid">
+            <div class="memory">
+              <strong></strong>
+              <p>Todas esas veces en las que ver algo juntos se volvió una forma bonita de sentirnos cerca.</p>
+            </div>
+            <div class="memory">
+              <strong></strong>
+              <p>Hablar por horas y horas contigo siempre me ha hecho sentir que el tiempo pasa super rapido cuando
+                estamos juntos.</p>
+            </div>
+            <div class="memory">
+              <strong></strong>
+              <p>Todas las noches en las que gracias a ti puedo dormir tranquilo y muy feliz porque me acompañas en
+                ellas.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-5-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-5-title">El amor también se cuida en los detalles pequeños.</h2>
+          <p class="lead">
+            Aprendí que la confianza no solo se rompe con grandes cosas también se lastima
+            cuando no soy cuidadoso con decisiones que parecen simples.
+          </p>
+          <p class="copy">
+            Aprendí que mis redes, mis límites y mi manera de actuar también hablan de cuánto
+            respeto tengo por ti y quiero que mis acciones digan algo claro, que te elijo,
+            que te respeto y que no quiero ponerte en una posición donde tengas que dudar de mí.
+
+          </p>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-6-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-6-title">No quiero que esto se quede solo en una disculpa bonita.</h2>
+          <div class="promise-list">
+            <button class="promise" type="button" aria-expanded="false">
+              <strong>Cuidar mis límites</strong>
+              <p>Voy a ser más consciente de a quién sigo, con quién interactúo y qué puede hacerte sentir mal.</p>
+              <small>No porque me lo tengas que exigir, sino porque yo quiero proteger nuestra tranquilidad.</small>
+            </button>
+            <button class="promise" type="button" aria-expanded="false">
+              <strong>Escucharte sin defenderme</strong>
+              <p>Cuando algo te duela, quiero escucharte primero y entenderte de verdad.</p>
+              <small>No quiero convertir tu dolor en una discusión quiero aprender a responder con madurez.</small>
+            </button>
+            <button class="promise" type="button" aria-expanded="false">
+              <strong>Demostrarlo con hechos</strong>
+              <p>Voy a cuidar lo nuestro con acciones constantes, no solo con palabras de un día.</p>
+              <small>La confianza merece paciencia, coherencia y respeto eso es lo que quiero darte.</small>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-7-title">
+        <div class="chapter-inner">
+          <p class="chapter-kicker">Canciones para nosotros</p>
+          <h2 id="chapter-7-title">Un carrusel de canciones que me hacen pensar en ti.</h2>
+          <div class="song-zone" aria-live="polite">
+            <button class="carousel-control" type="button" id="prevSong" aria-label="Canción anterior">‹</button>
+            <article class="song-card">
+              <div class="album-photo" aria-label="Espacio para la foto del álbum">
+                <img id="albumCover" class="is-hidden" src="" alt="">
+                <span class="album-placeholder" id="albumPlaceholder">Portada del álbum</span>
+              </div>
+              <div>
+                <h3 class="song-title" id="songTitle">Luna</h3>
+                <p class="song-artist" id="songArtist">Zoé</p>
+                <p class="song-note" id="songNote">Para esas noches donde la distancia se siente menos pesada cuando
+                  estamos juntos.</p>
+                <a class="song-open" id="songLink" href="https://www.youtube.com/watch?v=6W4L2O-JQ-w" target="_blank"
+                  rel="noopener noreferrer">Abrir para más amor</a>
+              </div>
+            </article>
+            <button class="carousel-control" type="button" id="nextSong" aria-label="Canción siguiente">›</button>
+          </div>
+          <div class="song-dots" id="songDots" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="chapter" aria-labelledby="chapter-8-title">
+        <div class="chapter-inner closing">
+          <p class="chapter-kicker"></p>
+          <h2 id="chapter-8-title">No te pido que olvides de inmediato.</h2>
+          <p class="lead">
+            Solo quiero que recuerdes lo mucho que ama mi corazon todo de ti, que haria todo lo necesario para que
+            puedas sentirte segura y feliz estando a mi lado, eres alguien muy importante en mi vida de verdad, todo
+            este tiempo hemos estado
+            pasando por momentos bonitos y cada uno de esos momentos me hace sentirme mas seguro de que quiero pasar
+            mucho mucho muchoooo tiempo a tu lado
+            quiero ser esa persona que te felicite por cada logro que tengas, cada cosa que te salga bien, quiero ser
+            esa persona que te de besos todas las mañanas
+            al despertar, quiero probar la comida que te gusta, quiero conoces todavia mucho mas de ti, eso hace que me
+            emocione mucho porque el simple hecho
+            de saber que aun no sé todo de ti me hace mas feliz porque significa que aun tengo mucho que aprender de ti
+            y muchas cosas por descubrir.</p>
+          <p class="copy">
+
+          </p>
+          <p class="signature">Con todo mi amor.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="nav" aria-label="Navegación">
+      <button class="nav-button" id="prevChapter" type="button">Anterior</button>
+      <button class="nav-button primary" id="nextChapter" type="button">Siguiente</button>
+    </nav>
+  </div>
+
+  <script>
+    const chapters = Array.from(document.querySelectorAll(".chapter"));
+    const chapterDots = document.getElementById("chapterDots");
+    const stepLabel = document.getElementById("stepLabel");
+    const prevChapter = document.getElementById("prevChapter");
+    const nextChapter = document.getElementById("nextChapter");
+    const particles = document.querySelector(".particles");
+    let currentChapter = 0;
+
+    chapters.forEach((_, index) => {
+      const dot = document.createElement("button");
+      dot.className = "dot";
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Ir al capítulo ${index + 1}`);
+      dot.addEventListener("click", () => showChapter(index));
+      chapterDots.appendChild(dot);
+    });
+
+    function showChapter(index) {
+      currentChapter = Math.max(0, Math.min(index, chapters.length - 1));
+
+      chapters.forEach((chapter, chapterIndex) => {
+        const isActive = chapterIndex === currentChapter;
+        chapter.classList.toggle("is-active", isActive);
+        chapter.setAttribute("aria-hidden", String(!isActive));
+      });
+
+      Array.from(chapterDots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle("is-active", dotIndex === currentChapter);
+      });
+
+      stepLabel.textContent = `Capítulo ${currentChapter + 1} de ${chapters.length}`;
+      prevChapter.disabled = currentChapter === 0;
+      nextChapter.textContent = currentChapter === chapters.length - 1 ? "Volver al inicio" : "Siguiente";
+    }
+
+    prevChapter.addEventListener("click", () => showChapter(currentChapter - 1));
+    nextChapter.addEventListener("click", () => {
+      if (currentChapter === chapters.length - 1) {
+        showChapter(0);
+        return;
+      }
+
+      showChapter(currentChapter + 1);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") {
+        showChapter(currentChapter + 1);
+      }
+
+      if (event.key === "ArrowLeft") {
+        showChapter(currentChapter - 1);
+      }
+    });
+
+    document.querySelectorAll(".promise").forEach((promise) => {
+      promise.addEventListener("click", () => {
+        const isOpen = promise.classList.toggle("is-open");
+        promise.setAttribute("aria-expanded", String(isOpen));
+      });
+    });
+
+    const songs = [
+      {
+        title: "Luna",
+        artist: "Zoé",
+        note: "Para esas noches donde la distancia se siente menos pesada cuando estamos juntos.",
+        album: "luna.png",
+        url: "https://www.youtube.com/watch?v=6W4L2O-JQ-w"
+      },
+      {
+        title: "Birdie",
+        artist: "León Larregui",
+        note: "Para pensar en la ternura de quererte sin prisa y con el corazón abierto.",
+        album: "birdie.png",
+        url: "https://www.youtube.com/watch?v=JbGhChI05xA"
+      },
+      {
+        title: "Venus",
+        artist: "Zoé",
+        note: "Para recordar que lo bonito también necesita cuidado, claridad y respeto.",
+        album: "venus.png",
+        url: "https://www.youtube.com/watch?v=Nnz2POQIHfs"
+      },
+      {
+        title: "Vía Láctea",
+        artist: "Zoé",
+        note: "Para esas llamadas largas donde el mundo se hacía chiquito y solo importaba escucharnos.",
+        album: "viaL.png",
+        url: "https://www.youtube.com/watch?v=yHJ5VGCQ_0s"
+      },
+      {
+        title: "Labios Rotos",
+        artist: "Zoé",
+        note: "Para todo lo que hemos sentido, incluso cuando cuesta encontrar palabras perfectas.",
+        album: "luna.png",
+        url: "https://www.youtube.com/watch?v=7h2ryr_uUEs"
+      },
+      {
+        title: "SKR",
+        artist: "Zoé",
+        note: "Para decirte, sin adornarlo demasiado, que quiero estar mejor para ti y contigo.",
+        album: "skr.png",
+        url: "https://www.youtube.com/watch?v=YtQS26joHWo"
+      }
+    ];
+
+    const songTitle = document.getElementById("songTitle");
+    const songArtist = document.getElementById("songArtist");
+    const songNote = document.getElementById("songNote");
+    const songLink = document.getElementById("songLink");
+    const songDots = document.getElementById("songDots");
+    const albumCover = document.getElementById("albumCover");
+    const albumPlaceholder = document.getElementById("albumPlaceholder");
+    let currentSong = 0;
+
+    songs.forEach((_, index) => {
+      const dot = document.createElement("span");
+      dot.className = "song-dot";
+      songDots.appendChild(dot);
+    });
+
+    function showSong(index) {
+      currentSong = (index + songs.length) % songs.length;
+      const song = songs[currentSong];
+      songTitle.textContent = song.title;
+      songArtist.textContent = song.artist;
+      songNote.textContent = song.note;
+      songLink.href = song.url;
+
+      if (song.album) {
+        albumCover.src = song.album;
+        albumCover.alt = `Portada de ${song.title}`;
+        albumCover.classList.remove("is-hidden");
+        albumPlaceholder.hidden = true;
+      } else {
+        albumCover.removeAttribute("src");
+        albumCover.alt = "";
+        albumCover.classList.add("is-hidden");
+        albumPlaceholder.hidden = false;
+        albumPlaceholder.textContent = `Portada de ${song.title}`;
+      }
+
+      Array.from(songDots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle("is-active", dotIndex === currentSong);
+      });
+    }
+
+    document.getElementById("prevSong").addEventListener("click", () => showSong(currentSong - 1));
+    document.getElementById("nextSong").addEventListener("click", () => showSong(currentSong + 1));
+
+    function addParticles() {
+      const count = window.matchMedia("(max-width: 640px)").matches ? 22 : 42;
+
+      for (let index = 0; index < count; index += 1) {
+        const particle = document.createElement("span");
+        particle.className = "particle";
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.animationDuration = `${14 + Math.random() * 18}s`;
+        particle.style.animationDelay = `${Math.random() * -22}s`;
+        particle.style.opacity = `${0.22 + Math.random() * 0.28}`;
+        particle.style.transform = `scale(${0.75 + Math.random() * 0.95})`;
+        particles.appendChild(particle);
+      }
+    }
+
+    showChapter(0);
+    showSong(0);
+    addParticles();
+  </script>
+</body>
+
+</html>
